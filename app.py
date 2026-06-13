@@ -216,39 +216,49 @@ if uploaded_file:
         with st.spinner("🤖 AI is analyzing your resume..."):
 
             prompt = f"""
-            You are an expert ATS system, recruiter, and career coach.
-            Provide the ATS score in this exact format:
+                You are an expert ATS system, recruiter, and career coach.
+                Analyze the resume against the job description.
 
-            ATS_SCORE: XX
-            Analyze the following resume.
+                Return your answer in EXACTLY this format:
 
-            Provide your response in exactly this format:
+                ATS_SCORE: XX
 
-            # ATS Score
-            Score: X/100
+                MATCH_SCORE: XX
 
+                # Strengths
+                - point
+                - point
+                - point
 
+                # Weaknesses
+                - point
+                - point
+                - point
 
-            MATCH_SCORE: XX
+                # Missing Skills
+                - point
+                - point
+                - point
 
-            # Strengths
-            ...
+                # Missing Keywords
+                - point
+                - point
+                - point
 
-            # Weaknesses
-            ...
+                # Suggestions
+                - point
+                - point
+                - point
 
-            # Missing Skills
-            ...
+                # Final Verdict
+                A short paragraph.
 
-            # Missing Keywords
-            ...
+                RESUME:
+                {resume_text}
 
-            # Suggestions
-            ...
-
-            # Final Verdict
-            ...
-            """
+                JOB DESCRIPTION:
+                {job_description}
+                """
 
             response = model.generate_content(prompt)
 
