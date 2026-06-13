@@ -210,7 +210,7 @@ if uploaded_file:
             resume_text += text
 
     st.success("Resume uploaded successfully!")
-
+    st.write(resume_text[:1000])
     if st.button("Analyze Resume"):
 
         with st.spinner("🤖 AI is analyzing your resume..."):
