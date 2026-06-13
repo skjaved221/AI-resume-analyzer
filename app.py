@@ -115,7 +115,17 @@ with st.sidebar:
     • Gemini AI
     • PyPDF
     """)
+    st.markdown("### Resume Tips")
 
+    st.markdown("""
+        ✅ Keep resume 1 page
+
+        ✅ Add GitHub projects
+
+        ✅ Use action verbs
+
+        ✅ Quantify achievements
+    """)
     st.success("AI-Powered Career Assistant")
 
 st.markdown("""
@@ -217,48 +227,26 @@ if uploaded_file:
             # ATS Score
             Score: X/100
 
-            # Strengths
-            - Point 1
-            - Point 2
-            - Point 3
 
-            # Weaknesses
-            - Point 1
-            - Point 2
-            - Point 3
 
-            # Missing Skills
-            - Point 1
-            - Point 2
-            - Point 3
-
-            # Suggestions for Improvement
-            - Point 1
-            - Point 2
-            - Point 3
-
-            # Final Verdict
-            A short paragraph explaining the overall quality of the resume and what the candidate should improve first.
-
-            Resume:
-
-            {resume_text}
-            Job Description:
-
-            {job_description}
-            
-            # Job Match Score
-            Score: X/100
-
-            # Missing Keywords
-
-            # Missing Skills
             MATCH_SCORE: XX
 
-            Missing Skills:
+            # Strengths
             ...
 
-            Missing Keywords:
+            # Weaknesses
+            ...
+
+            # Missing Skills
+            ...
+
+            # Missing Keywords
+            ...
+
+            # Suggestions
+            ...
+
+            # Final Verdict
             ...
             """
 
@@ -267,7 +255,15 @@ if uploaded_file:
             analysis = response.text
 
             match = re.search(r"ATS_SCORE:\s*(\d+)", analysis)
+            job_match = re.search(
+                r"MATCH_SCORE:\s*(\d+)",
+                analysis
+            )
 
+            if job_match:
+                match_score = int(job_match.group(1))
+            else:
+                match_score = 0
             if match:
                 ats_score = int(match.group(1))
             else:
@@ -282,18 +278,25 @@ if uploaded_file:
             else:
                 st.error(f"ATS Score: {ats_score}/100")
 
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
 
             with col1:
                 st.metric(
-                    label="ATS Score",
-                    value=f"{ats_score}/100",
-                    delta=f"{ats_score-70}"
+                    "ATS Score",
+                    f"{ats_score}/100"
             )
 
             with col2:
-                st.progress(ats_score/100)
+                st.metric(
+                    "Job Match",
+                    f"{match_score}%"
+                    )
 
+            with col3:
+                st.metric(
+                    "Pages",
+                    len(reader.pages)
+                )
             tab1, tab2 = st.tabs([
                 "📊 Resume Analysis",
                 "🎯 Job Match"
@@ -311,8 +314,18 @@ if uploaded_file:
                 
                 if job_description:
 
-                    st.success("Job Description Provided")
+                    if match_score >= 80:
+                        st.success("Excellent Match")
+                    elif match_score >= 60:
+                        st.warning("Moderate Match")
+                    else:
+                        st.error("Poor Match")
+                    st.metric(
+                        "Job Match Score",
+                        f"{match_score}%"
+                    )
 
+                    st.progress(match_score/100)
                     st.markdown("""
                     Job matching analysis is included in the report above.
 
@@ -327,3 +340,9 @@ if uploaded_file:
                     st.warning(
                         "Paste a job description to use this feature."
                     )
+
+                st.download_button(
+                    "📥 Download Analysis",
+                    analysis,
+                    "resume_report.txt"
+                )
